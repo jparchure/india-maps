@@ -28,7 +28,7 @@
     var g = svg.append("g");
 
     d3.json("india.json", function(error, data){
-
+      console.log(data.objects);
       var boundary = centerZoom(data);
 
       //drawSubUnitLabels(data);
@@ -42,7 +42,7 @@
     function centerZoom(data){
 
       var o = topojson.mesh(data, data.objects.polygons, function(a, b) { return a === b; });
-
+      console.log(o);
       projection
           .scale(1)
           .translate([0, 0]);
