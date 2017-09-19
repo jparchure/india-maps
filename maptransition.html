@@ -30,13 +30,10 @@
     d3.json("india.json", function(error, data){
       console.log(data.objects);
       var boundary = centerZoom(data);
-
-      //drawSubUnitLabels(data);
-      //drawPlaces(data);
+      subunits = drawSubUnits(data);
+      drawPlaces(data);
+      colorSubunits(subunits);
       drawOuterBoundary(data, boundary);
-      drawSubUnits(data);
-      //colorSubunits(subunits);
-
     });
 
     function centerZoom(data){
@@ -71,14 +68,13 @@
 
           svg.append("path")
               .attr("d", path)
-
               .attr("fill", "none")
               .call(transition)
               ;
 
           function transition(pathLine) {
             pathLine.transition()
-                .duration(7500)
+                .duration(1750)
                 .attrTween("stroke-dasharray", tweenDash)
                 .attr("stroke", "#000");
 
@@ -95,23 +91,38 @@
 
 
     function drawPlaces(data){
+      g3 = g.append("g")
 
-      g.append("path")
-          .datum(topojson.feature(data, data.objects.places))
-          .attr("d", path)
-          .attr("class", "place");
-
-      g.selectAll(".place-label")
+      label = g3.selectAll(".place-label")
           .data(topojson.feature(data, data.objects.places).features)
-        .enter().append("text")
+          .enter().append("text")
           .attr("class", "place-label")
-          .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+
           .attr("dy", ".35em")
           .attr("x", 6)
           .attr("text-anchor", "start")
           .style("font-size", ".7em")
+
           .style("text-shadow", "0px 0px 2px #fff")
-          .text(function(d) { return d.properties.name; });
+          .attr("transform", function(d) { return "translate(" +700 + ",0)"; })
+          .text(function(d) { console.log(projection(d.geometry.coordinates) ); return d.properties.name; })
+          .style("fill","white");
+
+      label.transition().duration(1000).style("fill","black"); //Fade in the placename
+
+
+      var transWidth = width*0.75;
+      console.log(transWidth);
+      label.attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; }); //Move to the map
+
+      label.transition()
+          .delay(1200)
+          .attr("transform", function(d) { return "translate(" +  transWidth + "," + projection(d.geometry.coordinates)[1] +")"; }); //Move to the left
+
+    //place.transition()
+              // .delay(1000)
+      //         .attr("transform", function(d) { console.log(d);return "translate(" +  -500+ "," + 100 +")"; });
+
 
     }
 
@@ -123,7 +134,7 @@
         .append("path")
             .attr("class", "subunit")
             .attr("d", path)
-            .style("fill","#ffff00")
+            .style("fill","#fff")
             .style("stroke", "#fff")
             .style("stroke-width", "5px");
 
@@ -177,8 +188,6 @@
 
       var c = d3.scaleOrdinal(d3.schemeBlues[9]);
       subunits
-          .style("fill", function(d,i){ return c(i); })
-          .style("opacity", "1")
           .on("mouseover",function(d){
             d3.select(this).style("opacity","0.6");
             drawStateInfo([d]); //Show state name on hover
@@ -189,6 +198,11 @@
           })
           ;
 
+
+          subunits.transition()
+          .duration(1200)
+          .style("fill", function(d,i){ return c(i); })
+          .style("opacity", "1") ;
     }
     </script>
 

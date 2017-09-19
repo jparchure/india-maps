@@ -25,7 +25,7 @@
         .attr("height", height);
 
     d3.json("india.json", function(error, data){
-      centerZoom(data);
+      //centerZoom(data);
       //International Bounds
       var OuterBound = topojson.mesh(data, data.objects.polygons, function(a, b) { return a === b; });
 
